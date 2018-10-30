@@ -11,7 +11,7 @@ app.use(bodyParser());
 const sqlConfig = {
     user: 'student',
     password: 'Admin123',
-    server: 'clasedesarolloweb1.database.windows.net',
+    server: 'clasedesarrolloweb1.database.windows.net',
     database: 'movies',
     port: 1433,
     debug: true,
@@ -33,7 +33,7 @@ app.get('/v1/movies', function(req, res){
     
     const pool = new sql.ConnectionPool(sqlConfig, err => {
 
-        var querytext = `select * from dbo.Movies`;
+        var querytext = `select * from movies`;
 
         var request = pool.request();
 
