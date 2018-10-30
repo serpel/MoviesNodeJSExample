@@ -1,0 +1,22 @@
+{
+  "name": "movies",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "keywords": [
+    "movies",
+    "backend"
+  ],
+  "author": "Sergio Peralta",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.4",
+    "mocha": "^5.2.0",
+    "mssql": "^4.2.2"
+  }
+}

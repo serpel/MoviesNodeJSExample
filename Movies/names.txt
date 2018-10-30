@@ -1,0 +1,18 @@
+//imdb servicio para mostrar resumenes de peliculas.
+//GET -> localhost:8090/v1/movies 
+-> optiene una lista de peliculas
+//GET -> localhost:8090/v1/movies?limit=10&genre=fiction&year=2017 
+
+//POST -> localhost:8090/v1/movies/create
+
+parametros:
+{ 
+    name,
+    genre,
+    images,
+    description,
+    year
+}
+
+//DELETE -> localhost:8090/v1/movies/remove/1
+
