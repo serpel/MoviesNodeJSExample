@@ -10,13 +10,13 @@ app.use(bodyParser());
 //10.48.0.45
 const sqlConfig = {
     user: 'student',
-    password: 'student123',
-    server: 'DESKTOP-I8V7NM6\\MSSQLSERVER',
-    database: 'Movies',
+    password: 'Admin123',
+    server: 'clasedesarolloweb1.database.windows.net',
+    database: 'movies',
     port: 1433,
     debug: true,
     options: {
-        encrypt: false,
+        encrypt: true,
         //intanceName: 'DESKTOP-I8V7NM6\\MSSQLSERVER'
     }
 };
