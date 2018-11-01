@@ -3,17 +3,36 @@ var cors = require('cors');
 var bodyParser = require('body-parser')
 var app = express();
 var sql = require('mssql');
+var env = require('dotenv');
+var multer = require('multer');
 
-app.use(cors())
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now()+'.'+getExtension(file.originalname))
+    }
+})
+
+function getExtension(filename) {
+    var ext = path.extname(filename||'').split('.');
+    return ext[ext.length - 1];
+}
+
+var upload = multer({ storage: storage })
+
+
+const result = env.config();
+app.use(cors());
 app.use(bodyParser());
 
-//10.48.0.45
 const sqlConfig = {
-    user: 'student',
-    password: 'Admin123',
-    server: 'clasedesarrolloweb1.database.windows.net',
-    database: 'movies',
-    port: 1433,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
+    port: parseInt(process.env.DB_PORT),
     debug: true,
     options: {
         encrypt: true,
@@ -21,7 +40,7 @@ const sqlConfig = {
     }
 };
 
-app.listen(8090, function(){
+app.listen(parseInt(process.env.APP_PORT), function(){
     console.log("el servidor esta corriendo");
 });
 
