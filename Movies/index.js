@@ -5,6 +5,7 @@ var app = express();
 var sql = require('mssql');
 var env = require('dotenv');
 var multer = require('multer');
+var path = require('path');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -92,12 +93,13 @@ app.get('/v1/movies', function(req, res){
     */
 })
 
-app.post('/v1/movies/create', function(req, res){
+app.post('/v1/movies/create', upload.single('file'), function(req, res){
     var name = req.body.name;
     var genre = req.body.genre;
     var images = req.body.images;
     var description = req.body.description;
     var year = req.body.year;
+    var filename = req.file.filename;
 
     var result = {
         success: true,
@@ -105,7 +107,7 @@ app.post('/v1/movies/create', function(req, res){
         name: name,
         genre: genre,
         description: description,
-        images: images,
+        images: filename,
         year: year,
     };
 
