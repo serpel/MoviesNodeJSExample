@@ -34,18 +34,21 @@ const sqlConfig = {
     server: process.env.DB_SERVER,
     database: process.env.DB_DATABASE,
     port: parseInt(process.env.DB_PORT),
-    debug: true,
-    options: {
-        encrypt: true,
-        //intanceName: 'DESKTOP-I8V7NM6\\MSSQLSERVER'
-    }
+    debug: true
 };
+
+app.use(function(err, req, res, next){
+    console.error(err);
+    res.send({ success: false, message: err })
+})
 
 app.listen(parseInt(process.env.APP_PORT), function(){
     console.log("el servidor esta corriendo");
 });
 
-app.get('/v1/movies', function(req, res){
+
+
+app.get('/v1/movies', function(req, res, next){
     //var limit = req.params.limit;
     var limit = req.query.limit || 10;
     var genre = req.query.genre || 'drama';
@@ -60,7 +63,7 @@ app.get('/v1/movies', function(req, res){
         request.query(querytext, (err, recordset) => {
             
             if(err) {
-                console.log(err);
+                return next(err);
             }
 
             var result = {
@@ -76,27 +79,11 @@ app.get('/v1/movies', function(req, res){
             res.send({error: err, success: false});
         });
     })
-
-
-    //aqui va consulta en la db
-
-    /*
-    var result = {
-        success: true,
-        message: '',
-        limit: limit,
-        genre: genre,
-        year: year,
-    };
-
-    res.send(result);
-    */
 })
 
-app.post('/v1/movies/create', upload.single('file'), function(req, res){
+app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
     var name = req.body.name;
     var genre = req.body.genre;
-    var images = req.body.images;
     var description = req.body.description;
     var year = req.body.year;
     var filename = req.file.filename;
