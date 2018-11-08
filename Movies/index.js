@@ -29,12 +29,15 @@ app.use(cors());
 app.use(bodyParser());
 
 const sqlConfig = {
-    user: process.env.DB_USER,
+    user: process.env.DB_USER || 'sa',
     password: process.env.DB_PASS,
     server: process.env.DB_SERVER,
     database: process.env.DB_DATABASE,
     port: parseInt(process.env.DB_PORT),
-    debug: true
+    debug: true,
+    options: {
+        encrypt: false
+    }
 };
 
 app.use(function(err, req, res, next){
@@ -44,19 +47,35 @@ app.use(function(err, req, res, next){
 
 app.listen(parseInt(process.env.APP_PORT), function(){
     console.log("el servidor esta corriendo");
+    console.log(result.parsed);
+    console.log(sqlConfig);
 });
-
-
 
 app.get('/v1/movies', function(req, res, next){
     //var limit = req.params.limit;
     var limit = req.query.limit || 10;
     var genre = req.query.genre || 'drama';
     var year = req.query.year || 2000;
+
+    sql.connect(sqlConfig).then(() => {
+        return sql.query(`select * from dbo.Movies where [Genre] like '${genre}'`)
+    }).then(result => {
+        var data= {
+            success: true,
+            message: '',
+            data: result.recordset
+        }
+        res.send(data);
+
+        sql.close();
+    }).catch(err => {
+        return next(err);
+    });
     
+    /*
     const pool = new sql.ConnectionPool(sqlConfig, err => {
 
-        var querytext = `select * from movies`;
+        var querytext = `select * from dbo.Movies where [Genre] like '${genre}'`;
 
         var request = pool.request();
 
@@ -74,11 +93,8 @@ app.get('/v1/movies', function(req, res, next){
 
             res.send(result);  
         })
-
-        pool.on('error', err => {
-            res.send({error: err, success: false});
-        });
     })
+    */
 })
 
 app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
@@ -86,19 +102,28 @@ app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
     var genre = req.body.genre;
     var description = req.body.description;
     var year = req.body.year;
-    var filename = req.file.filename;
+    var filename = req.file != null ? req.file.filename : '';
 
-    var result = {
-        success: true,
-        message: '',
-        name: name,
-        genre: genre,
-        description: description,
-        images: filename,
-        year: year,
-    };
+    if(!name && !genre && !year){
+        res.send("error");
+    }
 
-    res.send(result);
+    sql.connect(sqlConfig).then(() => {
+        var q = `insert into dbo.Movies([Name], [ReleaseDate], [Genre]) values('${name}', cast(${year} as smalldatetime), '${genre}')`;
+        console.log(q);
+        return sql.query(q)
+    }).then(result => {
+        var data = {
+            success: true,
+            message: `Se ha creado ${result.rowsAffected} registro nuevo`
+    }
+
+        res.send(data);
+
+        sql.close();
+    }).catch(err => {
+        return next(err);
+    })
 })
 
 
