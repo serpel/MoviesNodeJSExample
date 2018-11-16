@@ -71,30 +71,6 @@ app.get('/v1/movies', function(req, res, next){
     }).catch(err => {
         return next(err);
     });
-    
-    /*
-    const pool = new sql.ConnectionPool(sqlConfig, err => {
-
-        var querytext = `select * from dbo.Movies where [Genre] like '${genre}'`;
-
-        var request = pool.request();
-
-        request.query(querytext, (err, recordset) => {
-            
-            if(err) {
-                return next(err);
-            }
-
-            var result = {
-                success: true,
-                message: "",
-                movies: recordset.recordset
-            }
-
-            res.send(result);  
-        })
-    })
-    */
 })
 
 app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
@@ -133,7 +109,7 @@ app.put("/v1/movies/:id/edit", (req, res, next) => {
     var genre = req.query.genre;
 
     var q = `update dbo.Movies 
-             set Name = ${}`
+             set Name = ${name}`
 
     new sql.ConnectionPool(config).connect().then(pool => {
         return pool.query(q)
