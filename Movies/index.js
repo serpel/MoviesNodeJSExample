@@ -127,3 +127,24 @@ app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
 })
 
 
+app.put("/v1/movies/:id/edit", (req, res, next) => {
+    var id = req.params.id;
+
+    var name = req.query.name;
+    var genre = req.query.genre;
+
+    var q = `update dbo.Movies 
+             set Name = ${}`
+
+    new sql.ConnectionPool(config).connect().then(pool => {
+        return pool.query(q)
+    })
+    .then(result => {
+        return result.recordset
+    })
+    .catch(err => {
+        console.error(err);
+    })
+})
+
+
