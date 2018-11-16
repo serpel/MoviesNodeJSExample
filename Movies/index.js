@@ -86,7 +86,7 @@ app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
 
     var q = `insert into dbo.Movies([Name], [ReleaseDate], [Genre]) values('${name}', cast(${year} as smalldatetime), '${genre}')`;
      
-    new sql.ConnectionPool(config).connect().then(pool => {
+    new sql.ConnectionPool(sqlConfig).connect().then(pool => {
         return pool.query(q)
     })
     .then(result => {
@@ -103,22 +103,46 @@ app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
 
 
 app.put("/v1/movies/:id/edit", (req, res, next) => {
-    var id = req.params.id;
+    
+    console.log("entro");
 
-    var name = req.query.name;
-    var genre = req.query.genre;
+    var id = req.params.id;
+    var txt = '';
+
+    if(!id){
+        res.send("Error parametro id no existe");
+    }
+
+    var name = req.body.name;
+    if(!name){
+        res.send("Error se espera el parametro name");
+    }else{
+       txt += `set Name = '${name}'`
+    }
+
+    var genre = req.body.genre;
+    if(genre){
+        txt += `, Genre = '${genre}'`
+    }
 
     var q = `update dbo.Movies 
-             set Name = ${name}`
+             ${txt}
+             where MovieId = ${id}`
 
-    new sql.ConnectionPool(config).connect().then(pool => {
+    console.log(q);
+
+    new sql.ConnectionPool(sqlConfig).connect().then(pool => {
         return pool.query(q)
     })
     .then(result => {
-        return result.recordset
+        var data = {
+            sucess: true,
+            message: `Se actualizo el registro con id = ${id}`
+        }
+        res.send(data);
     })
     .catch(err => {
-        console.error(err);
+        return next(err);
     })
 })
 
