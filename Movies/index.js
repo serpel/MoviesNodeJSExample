@@ -108,21 +108,20 @@ app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
         res.send("error");
     }
 
-    sql.connect(sqlConfig).then(() => {
-        var q = `insert into dbo.Movies([Name], [ReleaseDate], [Genre]) values('${name}', cast(${year} as smalldatetime), '${genre}')`;
-        console.log(q);
-        return sql.query(q)
-    }).then(result => {
+    var q = `insert into dbo.Movies([Name], [ReleaseDate], [Genre]) values('${name}', cast(${year} as smalldatetime), '${genre}')`;
+     
+    new sql.ConnectionPool(config).connect().then(pool => {
+        return pool.query(q)
+    })
+    .then(result => {
         var data = {
             success: true,
             message: `Se ha creado ${result.rowsAffected} registro nuevo`
-    }
-
+        }
         res.send(data);
-
-        sql.close();
-    }).catch(err => {
-        return next(err);
+    })
+    .catch(err => {
+        console.error(err);
     })
 })
 
