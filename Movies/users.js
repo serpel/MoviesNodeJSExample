@@ -1,4 +1,5 @@
 let auth = require("./auth");
+const sgMail = require('@sendgrid/mail');
 
 module.exports = (app, sql, sqlConfig) => {
     app.post("/v1/users/autenticate", (req, res, next) => {
@@ -53,6 +54,19 @@ module.exports = (app, sql, sqlConfig) => {
         })
         .then(result => {
             res.send({ success: true, message: "user was created sucessful" });
+
+            // envio de email a traves de sendgrid.com
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+            const msg = {
+                to: email,
+                from: 'admin@example.com',
+                subject: 'Welcome to my Service',
+                text: 'Hey, Welcome to my jungle!!!',
+                html: `You new account is <strong>${email}</strong>`,
+            };
+
+            sgMail.send(msg);
         })
         .catch(err =>{
             return next(err);
