@@ -23,7 +23,6 @@ function getExtension(filename) {
 
 var upload = multer({ storage: storage })
 
-
 const result = env.config();
 app.use(cors());
 app.use(bodyParser());
@@ -52,3 +51,4 @@ app.listen(parseInt(process.env.APP_PORT), function(){
 });
 
 require("./movies")(upload, app, sql, sqlConfig);
+require("./users")(app, sql, sqlConfig);

@@ -1,22 +1,20 @@
 
+let auth = require('./auth');
+
 module.exports = (upload, app, sql, sqlConfig) => {
-    app.get('/v1/movies', (req, res, next) => {
+
+    app.get('/v1/movies', auth.ValidateToken, (req, res, next) => {
         //var limit = req.params.limit;
         var limit = req.query.limit || 10;
         var genre = req.query.genre || 'drama';
         var year = req.query.year || 2000;
 
-        sql.connect(sqlConfig).then(() => {
-            return sql.query(`select * from dbo.Movies where [Genre] like '${genre}'`)
-        }).then(result => {
-
-            console.log(result.recordsets.length) // count of recordsets returned by the procedure
-            console.log(result.recordsets[0].length) // count of rows contained in first recordset
-            console.log(result.recordset) // first recordset from result.recordsets
-            console.log(result.returnValue) // procedure return value
-            console.log(result.output) // key/value collection of output values
-            console.log(result.rowsAffected)
-
+        var q = `select * from dbo.Movies where [Genre] like '${genre}'`
+        
+        new sql.ConnectionPool(sqlConfig).connect().then(pool => {
+            return pool.query(q)
+        })
+        .then(result => {
             var data= {
                 success: true,
                 message: '',
@@ -30,7 +28,7 @@ module.exports = (upload, app, sql, sqlConfig) => {
         });
     })
 
-    app.post('/v1/movies/create', upload.single('file'), function(req, res, next){
+    app.post('/v1/movies/create', auth.ValidateToken, upload.single('file'), function(req, res, next){
         var name = req.body.name;
         var genre = req.body.genre;
         var description = req.body.description;
@@ -59,7 +57,7 @@ module.exports = (upload, app, sql, sqlConfig) => {
     })
 
 
-    app.put("/v1/movies/:id/edit", (req, res, next) => {
+    app.put("/v1/movies/:id/edit", auth.ValidateToken, (req, res, next) => {
         
         console.log("entro");
 
@@ -103,7 +101,7 @@ module.exports = (upload, app, sql, sqlConfig) => {
         })
     })
 
-    app.del("/v1/movies/:id/delete", (req, res, next) => {
+    app.del("/v1/movies/:id/delete", auth.ValidateToken, (req, res, next) => {
         var id = req.params.id;
 
         if(!id){
