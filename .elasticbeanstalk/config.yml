@@ -1,12 +1,12 @@
 branch-defaults:
   master:
-    environment: production
+    environment: Movies-env
 environment-defaults:
   production:
     branch: null
     repository: null
 global:
-  application_name: Movies-env
+  application_name: Movies
   default_ec2_keyname: null
   default_platform: arn:aws:elasticbeanstalk:us-west-1::platform/Node.js running on
     64bit Amazon Linux/4.5.4
