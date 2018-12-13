@@ -52,3 +52,5 @@ app.listen(parseInt(process.env.APP_PORT), function(){
 
 require("./movies")(upload, app, sql, sqlConfig);
 require("./users")(app, sql, sqlConfig);
+
+module.exports = app.listen(3000);

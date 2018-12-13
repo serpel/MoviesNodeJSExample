@@ -3,7 +3,7 @@ let auth = require('./auth');
 
 module.exports = (upload, app, sql, sqlConfig) => {
 
-    app.get('/v1/movies', auth.ValidateToken, (req, res, next) => {
+    app.get('/v1/movies', (req, res, next) => {
         //var limit = req.params.limit;
         var limit = req.query.limit || 10;
         var genre = req.query.genre || 'drama';
@@ -52,7 +52,7 @@ module.exports = (upload, app, sql, sqlConfig) => {
             res.send(data);
         })
         .catch(err => {
-            console.error(err);
+            return next(err);
         })
     })
 
